@@ -396,44 +396,7 @@ class DatabaseHandler {
 
     console.log("~~~~~~start create player");
 
-    let achievement = JSON.stringify(new Array(ACHIEVEMENT_COUNT).fill(0));
-    let inventory = JSON.stringify(new Array(INVENTORY_SLOT_COUNT).fill(0));
-
-    let [
-      account,
-      hash,
-      exp,
-      gold,
-      goldStash,
-      goldTrade,
-      x,
-      y,
-      ip,
-      createdAt,
-      // achievement,
-      // inventory,
-      stash,
-      weapon,
-      armor,
-      helm,
-      belt,
-      cape,
-      pet,
-      shield,
-      settings,
-      ring1,
-      ring2,
-      amulet,
-      nanoPotions,
-      gems,
-      artifact,
-      upgrade,
-      trade,
-      expansion1,
-      expansion2,
-      waypoints,
-      network,
-    ] = await this.client
+    await this.client
       .multi()
       .hSet(userKey, "account", player.account || "")
       .hSet(userKey, "hash", "")
@@ -445,8 +408,8 @@ class DatabaseHandler {
       .hSet(userKey, "y", player.y || "")
       .hSet(userKey, "ip", player.ip || "")
       .hSet(userKey, "createdAt", curTime)
-      .hSet(userKey, "achievement", achievement)
-      .hSet(userKey, "inventory", inventory)
+      .hSet(userKey, "achievement", JSON.stringify(new Array(ACHIEVEMENT_COUNT).fill(0)))
+      .hSet(userKey, "inventory", JSON.stringify(new Array(INVENTORY_SLOT_COUNT).fill(0)))
       .hSet(userKey, "stash", JSON.stringify(new Array(STASH_SLOT_COUNT).fill(0)))
       .hSet(userKey, "weapon", "dagger:1")
       .hSet(userKey, "armor", "clotharmor:1")
@@ -472,44 +435,7 @@ class DatabaseHandler {
       .hSet(userKey, "network", player.network || "nano")
       .exec();
     console.info("New User: " + player.name);
-    player.sendWelcome({
-      account,
-      hash,
-      exp,
-      gold,
-      goldStash,
-      goldTrade,
-      x,
-      y,
-      ip,
-      createdAt,
-      achievement,
-      inventory,
-      stash,
-      weapon,
-      armor,
-      helm,
-      belt,
-      cape,
-      pet,
-      shield,
-      settings,
-      ring1,
-      ring2,
-      amulet,
-      nanoPotions,
-      gems,
-      artifact,
-      upgrade,
-      trade,
-      expansion1,
-      expansion2,
-      waypoints,
-      depositAccount,
-      depositAccountIndex,
-      network,
-    });
-
+    await this.loadPlayer(player)
     console.log("~~~~~~done create player");
   }
 
